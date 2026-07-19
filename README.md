@@ -2,7 +2,7 @@
 
 A single-layer flexible PCB breakout board for the MPU-6050 6-axis IMU (GY-521 module), designed in KiCad and fabricated on a polyimide substrate at JLCPCB.
 
-![Board 3D Render](hardware/board_render.png)
+![Board assembled with LED lit](hardware/board_lit.jpg)
 
 ---
 
@@ -10,9 +10,17 @@ A single-layer flexible PCB breakout board for the MPU-6050 6-axis IMU (GY-521 m
 
 This board breaks out the MPU-6050 GY-521 IMU module onto a custom flexible PCB, exposing VCC, GND, SCL, and SDA through a 4-pin header (J1) for easy integration with any I2C microcontroller.
 
-The board features a custom star-shaped polyimide outline with koi fish silkscreen artwork, black coverlay, white silkscreen, and ENIG (gold) surface finish.
+The board features a custom star-shaped polyimide outline with koi fish silkscreen artwork, black coverlay, white silkscreen, and ENIG (gold) surface finish. SMD components were hand-soldered: R1 (150Ω) and D1 (red LED) using 0603 HandSolder footprints; C1 (100nF decoupling) using 0201 HandSolder footprint with syringe-assisted solder repositioning for pad alignment.
 
-**Status: Boards ordered from JLCPCB — pending assembly and test.**
+**Status: Fabricated, assembled, and fully tested — Jun 2026. I2C confirmed at address 0x68. Status LED confirmed operational.**
+
+---
+
+## Photos
+
+| Assembled board | Live setup |
+|---|---|
+| ![Board front](hardware/board_front.jpg) | ![Live setup with LED](hardware/board_lit.jpg) |
 
 ---
 
@@ -30,7 +38,6 @@ The board features a custom star-shaped polyimide outline with koi fish silkscre
 | Board dimensions | 37.21 × 38.07mm |
 | Minimum trace width | 0.3mm |
 | Minimum clearance | 0.15mm |
-| Fabrication | JLCPCB |
 | EDA tool | KiCad 7 |
 
 ---
@@ -45,8 +52,8 @@ The board features a custom star-shaped polyimide outline with koi fish silkscre
 |---|---|---|---|
 | U3 | MPU-6050 GY-521 module | — | PinHeader_1x08_2.54mm |
 | J1 | I2C output connector | — | PinHeader_1x04_2.54mm |
-| C1 | Decoupling capacitor | 100nF | 0603 SMD HandSolder |
-| R1 | LED current-limiting resistor | 130Ω | 0603 SMD HandSolder |
+| C1 | Decoupling capacitor | 100nF | 0201 SMD HandSolder |
+| R1 | LED current-limiting resistor | 150Ω | 0603 SMD HandSolder |
 | D1 | Status LED | Red | 0603 SMD HandSolder |
 
 ### Design Decisions
@@ -57,7 +64,8 @@ The board features a custom star-shaped polyimide outline with koi fish silkscre
 
 **Through-hole header mounting** — The GY-521 module mounts via 2.54mm pitch through-hole headers, allowing the module to be swapped without reflowing SMD pads.
 
-**130Ω LED resistor** — Calculated from VCC = 3.3V, V_LED = 2.0V (red), I_LED = 10mA: R = (3.3 - 2.0) / 0.010 = 130Ω.
+**150Ω LED resistor** — Calculated from VCC = 3.3V, V_LED = 2.0V (red), I_LED = 8.7mA: R = (3.3 - 2.0) / 0.0087 ≈ 150Ω (nearest standard E24 value). LED current is well within the 20mA absolute maximum.
+
 
 ---
 
@@ -87,6 +95,20 @@ The board features a custom star-shaped polyimide outline with koi fish silkscre
 
 ---
 
+## Test Results
+
+| Test | Result |
+|---|---|
+| VCC/GND short check (continuity) | No short detected ✅ |
+| Power rail voltage (J1 pin 1) | 3.3V confirmed ✅ |
+| Status LED (D1) | Lights up on power-on ✅ |
+| I2C scan | Device found at 0x68 ✅ |
+| Live sensor data | AccX/Y/Z and GyroX/Y/Z streaming correctly ✅ |
+
+**Note:** The flex substrate caused intermittent I2C dropout when the board was physically flexed during movement testing. For dynamic sensor applications, mount the board rigidly or use the GY-521 module directly on a breadboard. The board functions correctly when stationary.
+
+---
+
 ## Repository Structure
 
 ```
@@ -97,7 +119,9 @@ MPU6050-Flex-PCB/
 │   ├── MPU6050_Breakout.kicad_pcb
 │   ├── schematic.png
 │   ├── pcb_layout.png
-│   └── board_render.png
+│   ├── board_render.png
+│   ├── board_front.jpg
+│   └── board_lit.jpg
 ├── MPU_GERBER/
 │   └── (Gerber files)
 └── README.md
@@ -107,5 +131,5 @@ MPU6050-Flex-PCB/
 
 ## Author
 
-**Nour Ammar** — Electrical Engineering
+**Nour Ammar** — Electrical Engineer  
 [LinkedIn](https://linkedin.com/in/nour-ammar-b8578026a) · [GitHub](https://github.com/Naaurrr)
